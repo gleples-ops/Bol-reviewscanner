@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 from playwright.sync_api import sync_playwright
 import time
+import os
+
+# DIT IS DE CRUCIALE REGEL: Installeert de browser op de server
+os.system("playwright install chromium")
 
 # Pagina instellingen
 st.set_page_config(page_title="Bol Review Checker", page_icon="🛡️")
