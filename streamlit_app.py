@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 from playwright.sync_api import sync_playwright
 import time
-import os
-
-os.system("playwright install chromium")
 
 # Pagina instellingen
 st.set_page_config(page_title="Bol Review Checker", page_icon="🛡️")
@@ -22,7 +19,7 @@ if st.button("Start Analyse 🔍"):
     urls = [u.strip() for u in urls_input.split('\n') if u.strip()]
     
     if not urls:
-        st.error(" Voer aub minimaal één URL in.")
+        st.error("Voer aub minimaal één URL in.")
     else:
         results = []
         progress = st.progress(0)
@@ -36,7 +33,7 @@ if st.button("Start Analyse 🔍"):
             for idx, url in enumerate(urls):
                 st.info(f"Bezig met ophalen van product {idx+1}...")
                 try:
-                    page.goto(url, wait_until="domcontentloaded")
+                    page.goto(url, wait_until="domcontentloaded", timeout=60000)
                     time.sleep(2) # Menselijke vertraging
                     
                     # Haal producttitel op
@@ -77,9 +74,13 @@ if st.button("Start Analyse 🔍"):
             if not suspicious.empty:
                 st.warning(f"⚠️ **Verdachte activiteit gevonden!** Er zijn {len(suspicious['Reviewer'].unique())} personen die reviews hebben achtergelaten op meerdere van deze producten.")
                 st.subheader("Overzicht van overlappende reviewers:")
-                st.dataframe(suspicious.sort_values("Reviewer"))
+                st.table(suspicious.sort_values("Reviewer"))
             else:
                 st.success("✅ Geen overlappende reviewers gevonden in deze selectie.")
 
             st.subheader("Alle verzamelde data")
             st.dataframe(df)
+            
+            # Download optie
+            csv = df.to_csv(index=False).encode('utf-8')
+            st.download_button("Download Data als CSV", csv, "review_analyse.csv", "text/csv")
