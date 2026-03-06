@@ -4,7 +4,6 @@ from playwright.sync_api import sync_playwright
 import time
 import os
 
-# DIT IS DE CRUCIALE REGEL: Installeert de browser op de server
 os.system("playwright install chromium")
 
 # Pagina instellingen
